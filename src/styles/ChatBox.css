@@ -1,0 +1,17 @@
+.chatbox-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background: #1e1e2f;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.chatbox-container input {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+}

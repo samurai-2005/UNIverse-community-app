@@ -1,0 +1,18 @@
+.home-container {
+    margin-left: 260px;
+    padding: 40px;
+    background: linear-gradient(135deg, #2b5876, #4e4376);
+    color: white;
+    min-height: 100vh;
+    text-align: center;
+  }
+  
+  .home-container h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  
+  .home-container p {
+    font-size: 18px;
+  }
+  

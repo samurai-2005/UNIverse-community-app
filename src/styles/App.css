@@ -1,0 +1,38 @@
+.app-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 65px;
+  transition: all 0.3s ease;
+}
+
+.main-content {
+  flex: 1;
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  min-height: 75vh;
+  margin: 20px auto;
+  transition: margin-left 0.3s, width 0.3s;
+  width: calc(100% - 480px);
+}
+
+.main-content.expanded {
+  width: calc(100% - 140px);
+}
+
+.app-container.collapsed-left .main-content {
+  margin-left: 80px;
+  width: calc(100% - 320px);
+}
+
+.app-container.collapsed-right .main-content {
+  margin-right: 80px;
+  width: calc(100% - 320px);
+}
+
+.app-container.collapsed-left.collapsed-right .main-content {
+  margin-left: 80px;
+  margin-right: 80px;
+  width: calc(100% - 160px);
+}

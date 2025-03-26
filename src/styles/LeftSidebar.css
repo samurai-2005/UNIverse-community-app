@@ -1,0 +1,33 @@
+.left-sidebar {
+  width: 220px;
+  background: linear-gradient(135deg, #1f1c2c, #928dab);
+  color: white;
+  padding: 20px;
+  position: fixed;
+  top: 65px;
+  left: 0;
+  height: calc(100vh - 65px);
+  overflow-y: auto;
+  transition: width 0.3s;
+}
+
+.left-sidebar.collapsed {
+  width: 60px;
+  text-align: center;
+}
+
+.sidebar-toggle {
+  background: #ffcc00;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  margin-bottom: 15px;
+  transition: 0.3s;
+}
+
+.sidebar-toggle:hover {
+  background: #ff9900;
+}

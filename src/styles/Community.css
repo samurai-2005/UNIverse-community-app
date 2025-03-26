@@ -1,0 +1,148 @@
+/* CommunityPage.css - Fully Interactive with Sidebar Toggle, Like & Comment Features */
+
+.community-page {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  min-height: 75vh;
+  transition: margin-left 0.3s, margin-right 0.3s, width 0.3s ease-in-out;
+}
+
+/* Default Margins for Open Sidebars */
+.app-container .community-page {
+  margin-left: 240px;
+  margin-right: 240px;
+  width: calc(100% - 480px);
+}
+
+/* Adjust when sidebars are collapsed */
+.app-container.collapsed-left .community-page {
+  margin-left: 80px;
+  width: calc(100% - 320px);
+}
+
+.app-container.collapsed-right .community-page {
+  margin-right: 80px;
+  width: calc(100% - 320px);
+}
+
+.app-container.collapsed-left.collapsed-right .community-page {
+  margin-left: 80px;
+  margin-right: 80px;
+  width: calc(100% - 160px);
+}
+
+/* Create Post Section */
+.create-post {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f8f8f8;
+  margin-bottom: 20px;
+}
+
+.create-post textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+.create-post button {
+  align-self: flex-end;
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.create-post button:hover {
+  background: #0056b3;
+}
+
+/* Post Section */
+.posts {
+  margin-top: 20px;
+}
+
+.post {
+  background: #f4f4f4;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border-left: 5px solid #007bff;
+  position: relative;
+}
+
+.post h4 {
+  margin: 0 0 5px;
+  color: #333;
+}
+
+.post p {
+  margin: 5px 0;
+  color: #555;
+}
+
+/* Post Actions - Like & Comment */
+.post-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.post-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+  padding: 5px;
+}
+
+.post-actions button:hover {
+  color: #007bff;
+}
+
+/* Comments Section */
+.comments {
+  margin-top: 10px;
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.comments h5 {
+  margin: 0 0 5px;
+  font-size: 14px;
+}
+
+.comments p {
+  font-size: 14px;
+  margin: 5px 0;
+  color: #555;
+}
+
+.comments input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .community-page {
+    margin-left: 80px;
+    margin-right: 80px;
+    width: calc(100% - 160px);
+  }
+}
