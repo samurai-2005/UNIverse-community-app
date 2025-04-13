@@ -1,18 +1,16 @@
-// RightSidebar.js
-import React, { useState } from "react";
+import React from "react";
 import "../styles/RightSidebar.css";
 
-const RightSidebar = ({ setIsRightCollapsed }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
+const RightSidebar = ({ isCollapsed, setIsCollapsed }) => {
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
-    setIsRightCollapsed(!isCollapsed);
   };
 
   return (
     <div className={`right-sidebar ${isCollapsed ? "collapsed" : ""}`}>
-      <button className="sidebar-toggle" onClick={toggleSidebar}>{isCollapsed ? "◀" : "▶"}</button>
+      <button className="sidebar-toggle" onClick={toggleSidebar}>
+        {isCollapsed ? "◀" : "▶"}
+      </button>
       {!isCollapsed && (
         <>
           <h3>🔗 Connections</h3>

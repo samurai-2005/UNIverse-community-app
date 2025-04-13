@@ -1,19 +1,23 @@
-// Header.js (New Header Component)
-import React, { useState } from "react";
-import "../styles/Header.css";
+// src/components/Header.js
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthProvider';
+import '../styles/Header.css';
 
 const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { currentUser, logout } = useAuth();
 
   return (
     <header className="header">
-      <button className="logo" onClick={() => window.scrollTo(0, 0)}>🌌 Universe</button>
+      <button className="logo">🌌 Universe</button>
       <input type="text" placeholder="Search..." className="search-bar" />
-      <button className="notification-btn">🔔</button>
-      {isLoggedIn ? (
-        <button className="profile-btn">👤 Profile</button>
+      {currentUser ? (
+        <>
+          <button className="profile-btn">👤 {currentUser.name}</button>
+          <button className="logout-btn" onClick={logout}>Logout</button>
+        </>
       ) : (
-        <button className="login-btn" onClick={() => setIsLoggedIn(true)}>Login/Signup</button>
+        <Link to="/login" className="login-btn">Login/Signup</Link>
       )}
     </header>
   );

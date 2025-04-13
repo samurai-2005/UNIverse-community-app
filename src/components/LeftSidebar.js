@@ -1,19 +1,18 @@
-// LeftSidebar.js
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/LeftSidebar.css";
 
-const LeftSidebar = ({ setIsLeftCollapsed }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
+const LeftSidebar = ({ isCollapsed, setIsCollapsed }) => {
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
-    setIsLeftCollapsed(!isCollapsed);
   };
 
   return (
     <div className={`left-sidebar ${isCollapsed ? "collapsed" : ""}`}>
-      <button className="sidebar-toggle" onClick={toggleSidebar}>{isCollapsed ? "▶" : "◀"}</button>
+      <button className="sidebar-toggle" onClick={toggleSidebar}>
+        {isCollapsed ? "▶" : "◀"}
+      </button>
       {!isCollapsed && (
         <>
           <h3>Communities</h3>

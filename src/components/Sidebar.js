@@ -1,32 +1,36 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "../styles/Sidebar.css";
+// src/components/Sidebar.js
+const Sidebar = ({ type, isCollapsed, setIsCollapsed }) => {
+  const { currentUser } = useAuth();
 
-const Sidebar = () => {
   return (
-    <div className="sidebar">
-      <h2>🌌 UNIVERSE</h2>
-      <nav>
-        <h3>Communities</h3>
-        <ul>
-          <li><Link to="/community/ai">🚀 AI/ML</Link></li>
-          <li><Link to="/community/cybersecurity">🔒 Cybersecurity</Link></li>
-          <li><Link to="/community/fullstack">💻 Full Stack</Link></li>
-          <li><Link to="/community/iot">🌐 IoT</Link></li>
-        </ul>
-        <h3>Recommended Communities</h3>
-        <ul>
-          <li><Link to="/community/bca">✈ BCA Community</Link></li>
-          <li><Link to="/community/bba">✈ BBA Community</Link></li>
-        </ul>
-      </nav>
-
-      {/* Profile Button */}
-      <div className="profile-section">
-        <Link to="/profile" className="profile-btn">👤 Profile</Link>
-      </div>
+    <div className={`sidebar ${type} ${isCollapsed ? 'collapsed' : ''}`}>
+      <button className="sidebar-toggle" onClick={() => setIsCollapsed(!isCollapsed)}>
+        {isCollapsed ? '▶' : '◀'}
+      </button>
+      
+      {!isCollapsed && (
+        type === 'left' ? (
+          <>
+            <h3>Communities</h3>
+            <ul>
+               <li><Link to="/community/ai">🚀 AI/ML</Link></li> 
+              <li><Link to="/community/cybersecurity">🔒 Cybersecurity</Link></li>
+              <li><Link to="/community/fullstack">💻 Full Stack</Link></li> 
+              <li><Link to="/community/iot">🌐 IoT</Link></li> 
+              </ul> 
+              <h3>Recommended Communities</h3> 
+              <ul> 
+              <li><Link to="/community/bca">✈ BCA Community</Link></li> 
+              <li><Link to="/community/bba">✈ BBA Community</Link></li> 
+              </ul>
+          </>
+        ) : (
+          <>
+            <Connections />
+            <ChatBox />
+          </>
+        )
+      )}
     </div>
   );
 };
-
-export default Sidebar;

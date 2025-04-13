@@ -1,55 +1,125 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import DOMPurify from 'dompurify';
+import { useAuth } from '../contexts/AuthProvider';
 import "../styles/Community.css";
 
 const CommunityPage = () => {
   const { id } = useParams();
+  const { currentUser } = useAuth();
   const [posts, setPosts] = useState([]);
+  const [comments, setComments] = useState({});
   const [newPost, setNewPost] = useState("");
   const [commentText, setCommentText] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch posts from backend
+  // Fetch posts for the specific community
+  // Community.js - Modify the useEffect for fetching posts
+useEffect(() => {
+  setLoading(true);
+  // Community.js - Update axios call
+axios.get(`http://localhost:5000/api/posts?community=${id}`, {
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
+    'Content-Type': 'application/json'
+  },
+  withCredentials: true
+})
+  .then((response) => {
+    const postsWithComments = response.data.map((post) => ({
+      ...post,
+      comments: post.comments || [],
+    }));
+    setPosts(postsWithComments.reverse());
+    setLoading(false);
+  })
+  .catch((error) => {
+    console.error("Error fetching posts:", error);
+    setError("Failed to load posts. Please try again.");
+    setLoading(false);
+  });
+}, [id]);
+
+  // Fetch comments for each post
   useEffect(() => {
-    axios.get("http://localhost:5000/api/posts")
-      .then((response) => setPosts(response.data))
-      .catch((error) => console.error("Error fetching posts:", error));
+    const fetchComments = async (postId) => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/posts/${postId}/comments`);
+        setComments(prev => ({
+          ...prev,
+          [postId]: Array.isArray(response.data) ? response.data : [],
+        }));
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    posts.forEach(post => fetchComments(post._id));
+  }, [posts]);
+
+  // Post submission handler
+  const handlePostSubmit = useCallback(() => {
+    if (!newPost.trim() || !currentUser) return;
+
+    const tempPost = {
+      content: newPost,
+      community: id,
+      likes: 0,
+      comments: [],
+    };
+
+    axios.post("http://localhost:5000/api/posts", {
+      ...tempPost,
+      author: currentUser.id,
+    })
+    .then((response) => {
+      setPosts(prev => [response.data, ...prev]);
+      setNewPost("");
+    })
+    .catch((error) => {
+      console.error("Error creating post:", error);
+      setError("Failed to create post.");
+    });
+  }, [newPost, id, currentUser]);
+
+  // Like post handler
+  const handleLike = useCallback((postId) => {
+    setPosts(prev => prev.map(post => 
+      post._id === postId ? { ...post, likes: post.likes + 1 } : post
+    ));
+
+    axios.post(`http://localhost:5000/api/posts/${postId}/like`)
+      .catch(() => setError("Failed to like post."));
   }, []);
 
-  // Handle new post submission
-  const handlePostSubmit = () => {
-    if (newPost.trim() === "") return;
-    axios.post("http://localhost:5000/api/posts", {
-      author: "You",
-      content: newPost,
-    }).then((response) => {
-      setPosts([response.data, ...posts]);
-      setNewPost("");
-    }).catch((error) => console.error("Error creating post:", error));
-  };
+  // Comment submission handler
+  const handleCommentSubmit = useCallback((postId) => {
+    const text = commentText[postId]?.trim();
+    if (!text || !currentUser) return;
 
-  // Handle like button
-  const handleLike = (postId) => {
-    axios.post(`http://localhost:5000/api/posts/${postId}/like`)
-      .then(() => {
-        setPosts(posts.map(post => post.id === postId ? { ...post, likes: post.likes + 1 } : post));
-      }).catch((error) => console.error("Error liking post:", error));
-  };
-
-  // Handle comment submission
-  const handleCommentSubmit = (postId) => {
-    if (!commentText[postId] || commentText[postId].trim() === "") return;
     axios.post(`http://localhost:5000/api/posts/${postId}/comment`, {
-      comment: commentText[postId]
-    }).then(() => {
-      setPosts(posts.map(post => post.id === postId ? { ...post, comments: [...post.comments, commentText[postId]] } : post));
-      setCommentText({ ...commentText, [postId]: "" });
-    }).catch((error) => console.error("Error adding comment:", error));
-  };
+      text,
+      author: currentUser.id,
+    })
+    .then(response => {
+      setComments(prev => ({
+        ...prev,
+        [postId]: [...(prev[postId] || []), response.data]
+      }));
+      setCommentText(prev => ({ ...prev, [postId]: "" }));
+    })
+    .catch(() => setError("Failed to add comment."));
+  }, [commentText, currentUser]);
 
   return (
     <div className="community-page">
       <h2>🌍 {id.toUpperCase()} Community</h2>
+
+      {error && <p className="error-message">{error}</p>}
+      {loading && <p>Loading posts...</p>}
+
       <div className="create-post">
         <textarea
           value={newPost}
@@ -58,36 +128,48 @@ const CommunityPage = () => {
         />
         <button onClick={handlePostSubmit}>Post</button>
       </div>
+
       <div className="posts">
-        {posts.map((post) => (
-          <div key={post.id} className="post">
-            <h4>{post.author}</h4>
-            <p>{post.content}</p>
-            <div className="post-actions">
-              <button onClick={() => handleLike(post.id)}>👍 {post.likes}</button>
-              <button>💬 {post.comments.length}</button>
+        {posts.length > 0 ? (
+          posts.map((post) => (
+            <div key={post._id} className="post">
+              <h4>{post.author?.name || 'Anonymous'}</h4>
+              <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }} />
+              
+              <div className="post-actions">
+                <button onClick={() => handleLike(post._id)}>
+                  👍 {post.likes}
+                </button>
+                <button>💬 {comments[post._id]?.length || 0}</button>
+              </div>
+
+              <div className="comments">
+                <h5>Comments:</h5>
+                {comments[post._id]?.length > 0 ? (
+                  comments[post._id].map((comment) => (
+                    <p key={comment._id}>
+                      💬 <strong>{comment.author?.name}:</strong> {comment.text}
+                    </p>
+                  ))
+                ) : (
+                  <p>No comments yet</p>
+                )}
+                <input
+                  type="text"
+                  placeholder="Write a comment..."
+                  value={commentText[post._id] || ""}
+                  onChange={(e) => setCommentText({
+                    ...commentText,
+                    [post._id]: e.target.value
+                  })}
+                  onKeyDown={(e) => e.key === "Enter" && handleCommentSubmit(post._id)}
+                />
+              </div>
             </div>
-            <div className="comments">
-              <h5>Comments:</h5>
-              {post.comments.length > 0 ? (
-                post.comments.map((comment, index) => <p key={index}>💬 {comment}</p>)
-              ) : (
-                <p>No comments yet</p>
-              )}
-              <input
-                type="text"
-                placeholder="Write a comment..."
-                value={commentText[post.id] || ""}
-                onChange={(e) => setCommentText({ ...commentText, [post.id]: e.target.value })}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleCommentSubmit(post.id);
-                  }
-                }}
-              />
-            </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          !loading && <p>No posts yet in this community.</p>
+        )}
       </div>
     </div>
   );
